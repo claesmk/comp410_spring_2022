@@ -7,7 +7,8 @@ class DataTestCases(unittest.TestCase):
         expected_data = ['Aggie Pride Worldwide',
                          'Aggies Do',
                          'Aggie Strong!',
-                         'Go Aggies']
+                         'Go Aggies',
+                         'Aggies #1']
 
         data = read_data('sample_data.txt')
 
