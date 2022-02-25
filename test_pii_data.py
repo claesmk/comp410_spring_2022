@@ -65,6 +65,9 @@ class DataTestCases(unittest.TestCase):
         test_data = Pii('My ip address is 10001.30303.1001010.2020200')
         self.assertFalse(test_data.has_ipv4())
 
+        test_data = Pii('My ip address is 1.1.1.1')
+        self.assertTrue(test_data.has_ipv4())
+
     def test_has_ipv6(self):
         test_data = Pii()
         self.assertEqual(test_data.has_ipv6(), None)
