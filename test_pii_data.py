@@ -56,8 +56,14 @@ class DataTestCases(unittest.TestCase):
         self.assertEqual(test_data.has_email(), None)
 
     def test_has_ipv4(self):
-        test_data = Pii()
-        self.assertEqual(test_data.has_ipv4(), None)
+        test_data = Pii('My ip address is 192.168.1.1')
+        self.assertTrue(test_data.has_ipv4(), 'my custom message')
+
+        test_data = Pii('My ip address is 192a168b1c1')
+        self.assertFalse(test_data.has_ipv4())
+
+        test_data = Pii('My ip address is 10001.30303.1001010.2020200')
+        self.assertFalse(test_data.has_ipv4())
 
     def test_has_ipv6(self):
         test_data = Pii()
@@ -87,6 +93,10 @@ class DataTestCases(unittest.TestCase):
         # missing symbol
         test_data = Pii('1234764598764567')
         self.assertFalse(test_data.has_credit_card())
+
+        #amex
+        test_data = Pii('1234-123456-12345')
+        self.assertTrue(test_data.has_credit_card())
 
     def test_has_at_handle(self):
         test_data = Pii()
