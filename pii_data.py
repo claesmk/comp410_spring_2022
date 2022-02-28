@@ -7,14 +7,21 @@ class Pii(str):
     # For help with regex see
     # https://regex101.com
     # https://www.w3schools.com/python/python_regex.asp
-    def has_us_phone(self):
-        if re.search(r'\d{9}', self):
-            return True
+    def has_us_phone(self, anonymize=False):
+        # https://docs.python.org/3.9/library/re.html?highlight=subn#re.subn
+        newstr, count1 = re.subn(r'\d{9}', '[us phone]', self)
+
         # Match a US phone number ddd-ddd-dddd ie 123-456-7890
-        elif re.search(r'\d{3}[-.]\d{3}[-.]\d{4}', self):
-            return True
+        newstr, count2 = re.subn(r'\d{3}[-.]\d{3}[-.]\d{4}', '[us phone]', newstr)
+
+        if anonymize:
+            # Since str is immutable it's better to stay with the spec and return a new
+            # string rather than modifying self
+            return newstr
         else:
-            return False
+            # Keep the original requirement in place by returning True or False if
+            # a us phone number was present or not.
+            return bool(count2+count1)
 
     def has_email(self):
         em = re.search(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9]{2,}\b', self)
