@@ -6,7 +6,7 @@ from pii_data import Pii
 class DataTestCases(unittest.TestCase):
     def test_read_data(self):
         expected_data = ['Aggie Pride Worldwide',
-                         'Aggies Do',
+                         'Aggies Do', 
                          'Go Aggies',
                          'Aggie Strong!',
                          'Go Aggies',
@@ -29,7 +29,10 @@ class DataTestCases(unittest.TestCase):
                          'Aggie Pride',
                          'Aggies are always number 1!',
                          'Because thats what Aggies do',
-                         'Aggie Bred']
+                         'Aggie Bred',
+                         'Move forward with purpose',
+                         'GO Aggie!',
+                         'Aggie Pride']
 
         data = read_data('sample_data.txt')
 
@@ -97,8 +100,19 @@ class DataTestCases(unittest.TestCase):
         self.assertEqual(test_data.has_ipv4(), False)
 
     def test_has_ipv6(self):
-        test_data = Pii()
-        self.assertEqual(test_data.has_ipv6(), None)
+        # https: // www.ibm.com / docs / en / ts3500 - tape - library?topic = functionality - ipv4 - ipv6 - address - formats
+        # valid address
+        test_data = Pii('2001:0db8:85a3:0000:0000:8a2e:0370:7334')
+        self.assertTrue(test_data.has_ipv6())
+        # invalid - not enough segments
+        test_data = Pii('2001:0db8:0001:0000:0000:0ab9:C0A8')
+        self.assertFalse(test_data.has_ipv6())
+        # invalid - too many colons
+        test_data = Pii('2001:0db8:0001:0000:0000:0ab9:C0A8:0102:')
+        self.assertFalse(test_data.has_ipv6())
+        # invalid - seperated by commas not colons
+        test_data = Pii('2001,0db8,0001,0000,0000,0ab9,C0A8,0102')
+        self.assertFalse(test_data.has_ipv6())
 
     def test_has_name(self):
         #Test case for valid name
@@ -115,8 +129,17 @@ class DataTestCases(unittest.TestCase):
 
 
     def test_has_street_address(self):
-        test_data = Pii()
-        self.assertEqual(test_data.has_street_address(), None)
+        test_data = Pii('123 Addy Rd')
+        self.assertEqual(test_data.has_street_address(), True)
+
+        test_data = Pii('12356 Michellen Rd')
+        self.assertEqual(test_data.has_street_address(), False)
+         
+        test_data = Pii('123 pope Blvd')
+        self.assertEqual(test_data.has_street_address(), False)
+
+        test_data = Pii('123 Rich Blvd')
+        self.assertEqual(test_data.has_street_address(), True)
 
     def test_has_credit_card(self):
         test_data = Pii('My card is 1234-1234-1234-1234')
