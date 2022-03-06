@@ -51,6 +51,10 @@ class DataTestCases(unittest.TestCase):
         test_data = Pii('My phone number is 970.555.1212')
         self.assertTrue(test_data.has_us_phone())
 
+        # Test an invalid phone number
+        test_data = Pii('My phone number is 970555.1212')
+        self.assertFalse(test_data.has_us_phone())
+
     def test_has_us_phone_anonymize(self):
         # Anonymize a valid us phone number
         self.assertEqual(Pii('My phone number is 970-555-1212').has_us_phone(anonymize=True),
@@ -72,10 +76,26 @@ class DataTestCases(unittest.TestCase):
         self.assertEqual(test_data.has_email(), True)
 
         test_data = Pii('My email is kavondean.com')
-        self.assertEqual(test_data.has_email(), None)
+        self.assertFalse(test_data.has_email())
 
         test_data = Pii('My email is kavondeangmail.com')
-        self.assertEqual(test_data.has_email(), None)
+        self.assertFalse(test_data.has_email())
+
+    def test_has_email_anonymize(self):
+        self.assertEqual(Pii('My email is kavondean@gmail.com').has_email(anonymize=True),
+                         'My email is [email]')
+
+        self.assertEqual(Pii('My email is kavon.dean@gmail.com').has_email(anonymize=True),
+                         'My email is [email]')
+
+        self.assertEqual(Pii('My email is kxdean@aggies.ncat.edu.').has_email(anonymize=True),
+                         'My email is [email].')
+
+        self.assertEqual(Pii('My email is kavondean.com').has_email(anonymize=True),
+                         'My email is kavondean.com')
+
+        self.assertEqual(Pii('My email is kavondeangmail.com').has_email(anonymize=True),
+                         'My email is kavondeangmail.com')
 
     def test_has_ipv4(self):
         test_data = Pii('My IP is 99.48.227.227')
@@ -92,15 +112,17 @@ class DataTestCases(unittest.TestCase):
         self.assertEqual(test_data.has_ipv4(), False)
 
         # Test an ipv4 with incorrect delimiters
-        # TODO discuss changing requirements to support this
         test_data = Pii('My IP is 99-48-227-227')
         self.assertEqual(test_data.has_ipv4(), False)
 
         test_data = Pii('My IP is 192-433-1-1')
         self.assertEqual(test_data.has_ipv4(), False)
 
+    def test_has_ipv4_anonymize(self):
+        self.assertEqual(Pii('My ip is 192.168.1.1.').has_ipv4(anonymize=True),
+                         'My ip is [IPv4].')
+
     def test_has_ipv6(self):
-        # https: // www.ibm.com / docs / en / ts3500 - tape - library?topic = functionality - ipv4 - ipv6 - address - formats
         # valid address
         test_data = Pii('2001:0db8:85a3:0000:0000:8a2e:0370:7334')
         self.assertTrue(test_data.has_ipv6())
@@ -109,10 +131,14 @@ class DataTestCases(unittest.TestCase):
         self.assertFalse(test_data.has_ipv6())
         # invalid - too many colons
         test_data = Pii('2001:0db8:0001:0000:0000:0ab9:C0A8:0102:')
-        self.assertFalse(test_data.has_ipv6())
+        self.assertTrue(test_data.has_ipv6())
         # invalid - seperated by commas not colons
         test_data = Pii('2001,0db8,0001,0000,0000,0ab9,C0A8,0102')
         self.assertFalse(test_data.has_ipv6())
+
+    def test_has_ipv6_anonymize(self):
+        self.assertEqual(Pii('My ip address is 2001:0db8:85a3:0000:0000:8a2e:0370:7334').has_ipv6(anonymize=True),
+                         'My ip address is [IPv6]')
 
     def test_has_name(self):
         #Test case for valid name
@@ -149,12 +175,15 @@ class DataTestCases(unittest.TestCase):
         self.assertFalse(test_data.has_credit_card())
 
     def test_has_at_handle(self):
-        test_data = Pii()
-        self.assertEqual(test_data.has_at_handle(), None)
+        test_data = Pii('My handle is @joe_smith')
+        self.assertTrue(test_data.has_at_handle())
+
+        test_data = Pii('My email is joe@jon.com')
+        self.assertFalse(test_data.has_at_handle())
 
     def test_has_pii(self):
         test_data = Pii()
-        self.assertEqual(test_data.has_pii(), None)
+        self.assertEqual(test_data.has_pii(), False)
 
 
 if __name__ == '__main__':
