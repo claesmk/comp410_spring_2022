@@ -58,8 +58,28 @@ class DataTestCases(unittest.TestCase):
         self.assertEqual(test_data.has_ipv4(), None)
 
     def test_has_ipv6(self):
-        test_data = Pii()
-        self.assertEqual(test_data.has_ipv6(), None)
+        # test valid test cases
+        test_data = Pii('2001:0db8:85a3:0000:0000:8a2e:0370:7334')
+        self.assertTrue(test_data.has_ipv6())
+
+        # test anonymize valid address
+        test_data = Pii('My IP address is 2001:0db8:85a3:0000:0000:8a2e:0370:7334')
+        self.assertEqual(test_data.has_ipv6(anonymize = True), 'My IP address is [iPv6 address]')
+
+        # test invalid test cases
+        test_data = Pii('A001:0db8:85a3:0000:0000::0370:7334:')
+        self.assertFalse(test_data.has_ipv6())
+
+        # test anonymize invalid address
+        self.assertEqual(test_data.has_ipv6(anonymize = True), 'Invalid address')
+
+        # test invalid test cases
+        test_data = Pii('2001:0db8:85a3:0000:')
+        self.assertFalse(test_data.has_ipv6())
+        self.assertEqual(test_data.has_ipv6(anonymize = True), "My IP address is [IPv6 address]")
+
+        # test anonymize invalid address
+        self.assertEqual(test_data.has_ipv6(anonymize = True), 'Invalid address')
 
     def test_has_name(self):
         test_data = Pii()

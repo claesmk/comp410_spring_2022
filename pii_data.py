@@ -20,8 +20,16 @@ class Pii(str):
     def has_ipv4(self):
         return None
 
-    def has_ipv6(self):
-        return None
+    def has_ipv6(self, anonymize = False):
+        # Match a IPv6 address
+        match = re.sub(r'(^(\b[0-9a-fA-F]{0,4}\b)?:(\b[0-9a-fA-F]{0,4}\b)?:'
+                           r'(\b[0-9a-fA-F]{0,4}\b)?:(\b[0-9a-fA-F]{0,4}\b)?:'
+                           r'(\b[0-9a-fA-F]{0,4}\b)?:(\b[0-9a-fA-F]{0,4}\b)?:'
+                           r'(\b[0-9a-fA-F]{0,4}\b)?:(\b[0-9a-fA-F]{0,4}\b)?$)', '[IPv6 address]', self)
+        if anonymize:
+            return match
+        else:
+            return True
 
     def has_name(self):
         return None
