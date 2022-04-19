@@ -1,4 +1,7 @@
 import re
+from dotenv import load_dotenv
+import os
+import requests
 
 
 # PII = Personally Identifiable Information
@@ -7,12 +10,12 @@ class Pii(str):
     # For help with regex see
     # https://regex101.com
     # https://www.w3schools.com/python/python_regex.asp
-    def has_us_phone(self):
+    def has_us_phone(self, anonymize=False):
         # Match a US phone number ddd-ddd-dddd ie 123-456-7890
-        match = re.search(r'\d{3}-\d{3}-\d{4}', self)
-        if match:
-            return True
-        return False
+        m, c = re.subn(r'\d{3}-\d{3}-\d{4}', '[us phone]', self)
+        if anonymize:
+            return m
+        return bool(c)
 
     def has_email(self):
         return None
@@ -40,24 +43,45 @@ class Pii(str):
                self.has_street_address() or self.has_credit_card() or self.has_at_handle()
 
 
-def read_data(filename: str):
-    data = []
-    with open(filename) as f:
-        # Read one line from the file stripping off the \n
-        for line in f:
-            data.append(line.rstrip())
-    return data
+# Read data from source file secured with an api key and return a list of lines
+def read_data() -> list:
+    # Load the API_KEY from .env file
+    # https://www.datascienceexamples.com/env-file-for-passwords-and-keys/
+    load_dotenv()
+    api_key = os.getenv('API_KEY')
+
+    # Construct the URL from the API key
+    url = requests.get('https://drive.google.com/uc?export=download&id=' + api_key)
+
+    # Return the data as a list of lines
+    return url.text.split('\n')
+
+
+# Writes a list of strings to a local file
+# Returns the number of lines that were written
+def write_data(filename: str, str_list: list) -> int:
+    line_count = 0
+    with open(filename, 'w') as f:
+        for s in str_list:
+            f.write(s+'\n')
+            line_count += 1
+    return line_count
 
 
 if __name__ == '__main__':
-    data = read_data('sample_data.txt')
-    print(data)
-    print('---')
+    # read the data from the case logs
+    data = read_data()
 
-    pii_data = Pii('My phone number is 123-123-1234')
-    print(pii_data)
+    # print the first 5 lines
+    for line in data[:5]:
+        print(line)
 
-    if pii_data.has_pii():
-        print('There is PII data preset')
-    else:
-        print('No PII data detected')
+    print('...')
+
+    # print the last 5 lines
+    for line in data[-5:]:
+        print(line)
+
+    # anonymize the data
+
+    # write the data to a file
