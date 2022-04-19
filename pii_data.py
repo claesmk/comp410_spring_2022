@@ -72,14 +72,18 @@ if __name__ == '__main__':
     # read the data from the case logs
     data = read_data()
 
+    # print the header
+    print(data[0])
+    print('...')
+
     # print the first 5 lines
-    for line in data[:5]:
+    for line in data[1:6]:
         print(line)
 
     print('...')
 
     # print the last 5 lines
-    for line in data[-5:]:
+    for line in data[-6:]:
         print(line)
 
     # anonymize the data
