@@ -65,10 +65,10 @@ class DataTestCases(unittest.TestCase):
 
         # test anonymize invalid address
         test_data = Pii('A001:0db8:85a3:0000:0000::0370:7334:')
-        self.assertEqual(test_data.has_ipv6(anonymize = True), 'Invalid address')
+        self.assertEqual(test_data.has_ipv6(anonymize = True), 'A001:0db8:85a3:0000:0000::0370:7334:')
         # test anonymize invalid address
         test_data = Pii('2001:0db8:85a3:0000:')
-        self.assertEqual(test_data.has_ipv6(anonymize = True), 'Invalid address')
+        self.assertEqual(test_data.has_ipv6(anonymize = True), '2001:0db8:85a3:0000:')
 
     def test_has_name(self):
         test_data = Pii()
