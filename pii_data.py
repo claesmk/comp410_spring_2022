@@ -29,7 +29,7 @@ class Pii(str):
         if anonymize:
             return match
         else:
-            return True
+            return True if match != self else None
 
     def has_name(self):
         return None
