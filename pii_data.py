@@ -1,6 +1,4 @@
 import re
-from dotenv import load_dotenv
-import os
 import requests
 
 
@@ -42,13 +40,19 @@ class Pii(str):
         return self.has_us_phone() or self.has_email() or self.has_ipv4() or self.has_ipv6() or self.has_name() or \
                self.has_street_address() or self.has_credit_card() or self.has_at_handle()
 
+    def anonymize(self):
+        return self.has_us_phone(anonymize=True)
+
 
 # Read data from source file secured with an api key and return a list of lines
 def read_data() -> list:
     # Load the API_KEY from .env file
     # https://www.datascienceexamples.com/env-file-for-passwords-and-keys/
-    load_dotenv()
-    api_key = os.getenv('API_KEY')
+    with open('.env') as f:
+        for line in f.readlines():
+            m = re.search(r'API_KEY="(\w+-\w+)"', line)
+            if m:
+                api_key = m.group(1)
 
     # Construct the URL from the API key
     url = requests.get('https://drive.google.com/uc?export=download&id=' + api_key)
@@ -72,20 +76,9 @@ if __name__ == '__main__':
     # read the data from the case logs
     data = read_data()
 
-    # print the header
-    print(data[0])
-    print('...')
-
-    # print the first 5 lines
-    for line in data[1:6]:
-        print(line)
-
-    print('...')
-
-    # print the last 5 lines
-    for line in data[-6:]:
-        print(line)
-
     # anonymize the data
+    for i in range(len(data)):
+        data[i] = Pii(data[i]).anonymize()
 
-    # write the data to a file
+    # write results to a file
+    write_data('anonymized.csv', data)
