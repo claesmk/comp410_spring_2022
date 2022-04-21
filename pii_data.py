@@ -81,4 +81,4 @@ if __name__ == '__main__':
         data[i] = Pii(data[i]).anonymize()
 
     # write results to a file
-    write_data('anonymized.csv', data)
+    write_data('case_logs_anonymized.csv', data)
