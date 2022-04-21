@@ -5,13 +5,6 @@ import os
 
 
 class DataTestCases(unittest.TestCase):
-    def test_read_data(self):
-        # Read the data
-        data = read_data()
-
-        # Make sure the data starts with the expected header
-        self.assertEqual(data[0], 'TimeStamp,Event Log')
-
     def test_write_data(self):
         # Create some expected data to write
         expected = ['this', 'is', 'some', 'test', 'data']
